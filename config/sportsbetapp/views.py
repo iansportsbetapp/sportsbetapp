@@ -7,3 +7,8 @@ from django.template import loader
 def members(request):
     template = loader.get_template('index.html')
     return HttpResponse(template.render())
+
+from django.shortcuts import render
+
+def home(request):
+    return render(request, 'home.html')
