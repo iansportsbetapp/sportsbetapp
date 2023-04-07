@@ -5,5 +5,17 @@
 {% block content %}
   <h1>Welcome to my website!</h1>
   <p>This is a great place to learn about all kinds of things.</p>
-  <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">sign up</a> to access member-only content.</p>
+  
+{% if user.is_authenticated %}
+  <!-- Show logout link -->
+  <form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+  </form>
+{% else %}
+  <!-- Show login and register links -->
+  <a href="{% url 'login' %}">Login</a>
+  <a href="{% url 'register' %}">Register</a>
+{% endif %}
+
 {% endblock %}
