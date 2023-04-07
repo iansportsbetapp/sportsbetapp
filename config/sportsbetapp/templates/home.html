@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>My Django App</title>
-  </head>
-  <body>
-    <h1>Welcome to my Django App!</h1>
-    <p>This is the home page.</p>
-    <p>Check out our <a href="/members/">members area</a> to access exclusive content.</p>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+  <h1>Welcome to my website!</h1>
+  <p>This is a great place to learn about all kinds of things.</p>
+  <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">sign up</a> to access member-only content.</p>
+{% endblock %}
