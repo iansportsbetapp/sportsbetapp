@@ -3,19 +3,20 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-  <h1>Welcome to my website!</h1>
-  <p>This is a great place to learn about all kinds of things.</p>
-  
-{% if user.is_authenticated %}
-  <!-- Show logout link -->
-  <form action="{% url 'logout' %}" method="post">
-    {% csrf_token %}
-    <button type="submit">Logout</button>
-  </form>
-{% else %}
-  <!-- Show login and register links -->
-  <a href="{% url 'login' %}">Login</a>
-  <a href="{% url 'register' %}">Register</a>
-{% endif %}
+  <h1>Home Page</h1>
+  <p>this will be a sports betting app</p>
 
+  <div id="login-register">
+    {% if user.is_authenticated %}
+      <!-- Show logout link -->
+      <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+      </form>
+    {% else %}
+      <!-- Show login and register links -->
+      <a href="{% url 'login' %}">Login</a>
+      <a href="{% url 'register' %}">Register</a>
+    {% endif %}
+  </div>
 {% endblock %}

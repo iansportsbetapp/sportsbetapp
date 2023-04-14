@@ -31,7 +31,7 @@ def login_view(request):
         form = AuthenticationForm(request, request.POST)
         if form.is_valid():
             login(request, form.get_user())
-            return redirect('home')
+            return redirect('mydashboard')
     else:
         form = AuthenticationForm()
 
@@ -48,3 +48,8 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'register.html', {'form': form})
+
+#Dashboard view
+def Mydashboard(request):
+    template = loader.get_template('mydashboard.html')
+    return HttpResponse(template.render())
