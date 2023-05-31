@@ -3,20 +3,50 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-  <h1>Home Page</h1>
-  <p>this will be a sports betting app</p>
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-sm-2 d-none d-sm-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column">
+          
 
-  <div id="login-register">
-    {% if user.is_authenticated %}
-      <!-- Show logout link -->
-      <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-      </form>
-    {% else %}
-      <!-- Show login and register links -->
-      <a href="{% url 'login' %}">Login</a>
-      <a href="{% url 'register' %}">Register</a>
-    {% endif %}
+            <!-- This is hidden until login functionality is needed again -->
+            <!-- note that also hidden in CSS -->
+
+            <!-- {% if user.is_authenticated %}
+              <li class="nav-item">
+                <form action="{% url 'logout' %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" id="logout-btn">Logout</button>
+                </form>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'login' %}">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'register' %}">Register</a>
+              </li>
+            {% endif %} -->
+          </ul>
+        </div>
+      </nav>
+
+      <main role="main" class="col-sm-10 ml-sm-auto px-4">
+        <h1 class="mt-2">Upcoming events</h1>
+        <p>This is where upcoming events should display</p>
+        <!-- this is list item that displays events that are clickable -->
+        {% if games %}
+        <ul>
+          {% for game in games %}
+            <li><a href="{% url 'game_detail' game.id %}">{{ game.home_team }}</a></li>
+          {% endfor %}
+        </ul>
+          {% else %}
+            <p>No upcoming games.</p>
+          {% endif %}
+
+      </main>
+    </div>
   </div>
 {% endblock %}

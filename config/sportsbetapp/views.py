@@ -6,6 +6,10 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from api.theoddsapi import get_sports, get_upcoming_games
+from .models import Game
+
+
 
 
 # Create your views here.
@@ -16,9 +20,9 @@ def members(request):
 
 from django.shortcuts import render
 
-##homepage view
-def home(request):
-    return render(request, 'home.html')
+##homepage view - this may be deleted
+# def home(request):
+#     return render(request, 'home.html')
 
 #login form
 def login_view(request):
@@ -53,3 +57,22 @@ def register(request):
 def Mydashboard(request):
     template = loader.get_template('mydashboard.html')
     return HttpResponse(template.render())
+
+#api 'getsports' to test api connection
+def sports(request):
+    api_key = "cff6cb1b3c6773cdd7053a1f54b84342"
+    sports = get_sports(api_key)
+    context = {
+        "sports": sports,
+    }
+    return render(request, "sports.html", context)
+
+# this displays events stored as Game in models
+def home(request):
+    get_upcoming_games()
+    upcoming_games = Game.objects.all() # or filter based on your requirements
+    return render(request, 'home.html', {'games': upcoming_games})
+
+def game_detail(request, game_id):
+    game = Game.objects.get(pk=game_id)
+    return render(request, 'game_detail.html', {'game': game})

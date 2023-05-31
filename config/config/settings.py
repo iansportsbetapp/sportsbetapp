@@ -54,9 +54,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+# This is hidden until login functionality is needed
 #login/logout redirects
-LOGIN_REDIRECT_URL = 'mydashboard/'
-LOGOUT_REDIRECT_URL = '/'
+# LOGIN_REDIRECT_URL = 'mydashboard/'
+# LOGOUT_REDIRECT_URL = '/'
 
 
 TEMPLATES = [
