@@ -7,9 +7,17 @@ class Member(models.Model):
   lastname = models.CharField(max_length=125)
   phone = models.PositiveBigIntegerField()
 
-# this model stores data for events 
 class Game(models.Model):
     home_team = models.CharField(max_length=200)
     away_team = models.CharField(max_length=200)
-    commence_time = models.DateTimeField() 
-    # Include any other fields that you want
+    commence_time = models.DateTimeField()
+
+class Bookmaker(models.Model):
+    title = models.CharField(max_length=200)
+
+class Outcome(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='outcomes')
+    bookmaker = models.ForeignKey(Bookmaker, on_delete=models.CASCADE, related_name='outcomes')
+    name = models.CharField(max_length=200)  # Team name
+    price = models.FloatField()
+    point = models.FloatField(null=True, blank=True)  # Optional field for spreads

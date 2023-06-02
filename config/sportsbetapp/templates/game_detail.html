@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <p>Home Team</p>
+            <h2>{{ game.home_team }}</h2>
+
+            <table class="table">
+                <tr>
+                    <th>Bookmaker</th>
+                    <th>Price</th>
+                </tr>
+                {% for outcome in outcomes %}
+                    {% if outcome.name == game.home_team %}
+                        <tr>
+                            <td>{{ outcome.bookmaker.title }}</td>
+                            <td>{{ outcome.price }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="col">
+            <p>Start Time (local)</p>
+            <h4>{{ game.commence_time }}</h4>
+        </div>
+
+        <div class="col">
+            <p>Away Team</p>
+            <h2>{{ game.away_team }}</h2>
+
+            <table class="table">
+                <tr>
+                    <th>Bookmaker</th>
+                    <th>Price</th>
+                </tr>
+                {% for outcome in outcomes %}
+                    {% if outcome.name == game.away_team %}
+                        <tr>
+                            <td>{{ outcome.bookmaker.title }}</td>
+                            <td>{{ outcome.price }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

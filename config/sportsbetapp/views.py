@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from api.theoddsapi import get_sports, get_upcoming_games
 from .models import Game
+
 
 
 
@@ -74,5 +75,11 @@ def home(request):
     return render(request, 'home.html', {'games': upcoming_games})
 
 def game_detail(request, game_id):
-    game = Game.objects.get(pk=game_id)
-    return render(request, 'game_detail.html', {'game': game})
+    game = get_object_or_404(Game, pk=game_id)
+    outcomes = game.outcomes.all()
+
+    context = {
+        'game': game,
+        'outcomes': outcomes,
+    }
+    return render(request, 'game_detail.html', context)

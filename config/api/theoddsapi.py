@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime, timedelta
-from sportsbetapp.models import Game
+from sportsbetapp.models import Game, Bookmaker, Outcome
 from uuid import uuid4
 from requests.exceptions import RequestException
 from django.utils.dateparse import parse_datetime
@@ -33,11 +33,13 @@ def get_sports(api_key):
     else:
         return []
 
+##get upcoming games for game_details.html page
+
+
 def get_upcoming_games():
-    print("get_upcoming_games called") 
-    url = "https://api.the-odds-api.com/v4/sports/upcoming/odds/?apiKey=cff6cb1b3c6773cdd7053a1f54b84342" 
-    # replace 'upcoming' and 'cff6cb1b3c6773cdd7053a1f54b84342' with actual values if they're placeholders
-    
+    print("get_upcoming_games called")
+    url = "https://api.the-odds-api.com/v4/sports/upcoming/odds/?regions=us&markets=h2h&apiKey=cff6cb1b3c6773cdd7053a1f54b84342"
+
     try:
         response = requests.get(url)
         print(f"API response status code: {response.status_code}")
@@ -46,16 +48,21 @@ def get_upcoming_games():
     except Exception as e:
         print(f"Failed to fetch data: {str(e)}")
         return None
-    
+
     if response.status_code == 200:
         now = datetime.now()
         threshold = now + timedelta(hours=72)
-        
-        upcoming_games = [game for game in data['data'] if datetime.strptime(game['commence_time'], "%Y-%m-%dT%H:%M:%SZ") < threshold]
-        
-        for game in upcoming_games:
-            Game.objects.create(home_team=game['home_team'], away_team=game['away_team'], commence_time=game['commence_time'])  
-            print(f"Game object created: {game}")
-        
+
+        upcoming_games = []
+        for game in data:
+            commence_time = game['commence_time'].replace("Z", "")  # Remove the 'Z' character
+            if datetime.strptime(commence_time, "%Y-%m-%dT%H:%M:%S") < threshold:
+                game_obj = Game.objects.create(home_team=game['home_team'], away_team=game['away_team'], commence_time=game['commence_time'])
+                for bookmaker in game['bookmakers']:
+                    bookmaker_obj, created = Bookmaker.objects.get_or_create(title=bookmaker['title'])
+                    for outcome in bookmaker['markets'][0]['outcomes']:
+                        Outcome.objects.create(game=game_obj, bookmaker=bookmaker_obj, name=outcome['name'], price=outcome['price'])
+
         return upcoming_games
+
 
