@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse, request
 from django.template import loader
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from api.theoddsapi import get_sports, get_upcoming_games
+from api.json_to_views import get_upcoming_games
 from .models import Game
+import json
+
 
 
 
@@ -59,20 +61,18 @@ def Mydashboard(request):
     template = loader.get_template('mydashboard.html')
     return HttpResponse(template.render())
 
-#api 'getsports' to test api connection
-def sports(request):
-    api_key = "cff6cb1b3c6773cdd7053a1f54b84342"
-    sports = get_sports(api_key)
-    context = {
-        "sports": sports,
-    }
-    return render(request, "sports.html", context)
-
 # this displays events stored as Game in models
 def home(request):
-    get_upcoming_games()
-    upcoming_games = Game.objects.all() # or filter based on your requirements
-    return render(request, 'home.html', {'games': upcoming_games})
+    with open('../config/api/sports.json', 'r') as file:
+        sports_data = json.load(file)
+    
+    active_sports = [sport['description'] for sport in sports_data if sport['active']]
+    
+    context = {
+        'active_sports': active_sports
+    }
+    
+    return render(request, 'home.html', context)
 
 def game_detail(request, game_id):
     game = get_object_or_404(Game, pk=game_id)

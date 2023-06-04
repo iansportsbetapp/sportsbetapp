@@ -1,6 +1,8 @@
 import requests
 import json
 
+
+
 def get_sports_json():
     sports_response = requests.get(
         'https://api.the-odds-api.com/v4/sports',

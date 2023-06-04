@@ -3,6 +3,25 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
+<head>
+  <script src="/config/static/js/script.js"></script>
+</head>
+<div class="filter-section">
+  <h2>Filter</h2>
+  <div class="filter-container">
+    <label for="start-date">Start Date:</label>
+    <input type="text" id="start-date" placeholder="Select start date">
+
+    <label for="end-date">End Date:</label>
+    <input type="text" id="end-date" placeholder="Select end date">
+
+    <select name="sport" id="sport-dropdown">
+      {% for sport in active_sports %}
+        <option value="{{ sport }}">{{ sport }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
   <div class="container-fluid">
     <div class="row">
       <nav class="col-sm-2 d-none d-sm-block bg-light sidebar">
@@ -36,10 +55,10 @@
         <h1 class="mt-2">Upcoming events</h1>
         <p>This is where upcoming events should display</p>
         <!-- this is list item that displays events that are clickable -->
-        {% if games %}
+        <!-- {% if games %} -->
         <ul>
-          {% for game in games %}
-            <li><a href="{% url 'game_detail' game.id %}">{{ game.home_team }}</a></li>
+          <!-- {% for game in games %} -->
+            <!-- <li><a href="{% url 'game_detail' game.id %}">{{ game.home_team }}</a></li> -->
           {% endfor %}
         </ul>
           {% else %}
