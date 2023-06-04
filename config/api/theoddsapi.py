@@ -1,41 +1,8 @@
 import requests
 from datetime import datetime, timedelta
-from sportsbetapp.models import Game, Bookmaker, Outcome
-from uuid import uuid4
-from requests.exceptions import RequestException
-from django.utils.dateparse import parse_datetime
+from sportsbetapp.models import Game
 
-def get_sports(api_key):
-    url = "https://api.the-odds-api.com/v4/sports"
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-    }
-    params = {
-        "api_key": api_key,
-    }
-
-    response = requests.get(url, headers=headers, params=params)
-    if response.status_code == 200:
-        response_json = response.json()
-        sports = []
-        for sport_data in response_json:
-            sport = {
-                "key": sport_data["key"],
-                "group": sport_data["group"],
-                "title": sport_data["title"],
-                "description": sport_data["description"],
-                "active": sport_data["active"],
-                "has_outrights": sport_data["has_outrights"],
-            }
-            sports.append(sport)
-        return sports
-    else:
-        return []
-
-##get upcoming games for game_details.html page
-
-
+##this function currently fetches from the sports/odds endpoint, and populates data into models.
 def get_upcoming_games():
     print("get_upcoming_games called")
     url = "https://api.the-odds-api.com/v4/sports/upcoming/odds/?regions=us&markets=h2h&apiKey=cff6cb1b3c6773cdd7053a1f54b84342"
@@ -57,12 +24,16 @@ def get_upcoming_games():
         for game in data:
             commence_time = game['commence_time'].replace("Z", "")  # Remove the 'Z' character
             if datetime.strptime(commence_time, "%Y-%m-%dT%H:%M:%S") < threshold:
-                game_obj = Game.objects.create(home_team=game['home_team'], away_team=game['away_team'], commence_time=game['commence_time'])
-                for bookmaker in game['bookmakers']:
-                    bookmaker_obj, created = Bookmaker.objects.get_or_create(title=bookmaker['title'])
-                    for outcome in bookmaker['markets'][0]['outcomes']:
-                        Outcome.objects.create(game=game_obj, bookmaker=bookmaker_obj, name=outcome['name'], price=outcome['price'])
+                upcoming_games.append(game)
+
+        upcoming_games.sort(key=lambda x: x['commence_time'])  # Sort by event start time
+
+        for game in upcoming_games:
+            Game.objects.create(home_team=game['home_team'], away_team=game['away_team'], commence_time=game['commence_time'])
+            print(f"Game object created: {game}")
+                # Check the usage quota
+            print('Remaining requests', response.headers['x-requests-remaining'])
+            print('Used requests', response.headers['x-requests-used'])
 
         return upcoming_games
-
 
