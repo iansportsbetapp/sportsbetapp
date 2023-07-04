@@ -94,7 +94,7 @@ def get_upcoming_games(request, selected_sport):
 
 def game_detail(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
-    outcomes = game.outcomes.all()
+    outcomes = game.outcome_set.all()
 
     context = {
         'game': game,

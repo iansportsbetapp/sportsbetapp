@@ -61,24 +61,7 @@ function onSportSelection(selectedSport) {
         if (xhr.status === 200) {
           try {
             var games = JSON.parse(xhr.responseText);
-            
-            // Get the games list element
-            var gamesList = document.getElementById('games-list');
-            gamesList.innerHTML = ''; // Clear the current games list
-            
-            if (games.length === 0) {
-              var listItem = document.createElement('li');
-              listItem.textContent = 'No upcoming games.';
-              gamesList.appendChild(listItem);
-            } else {
-                for (var i = 0; i < games.length; i++) {
-                    var listItem = document.createElement('li');
-                    listItem.textContent = games[i].home_team + ' vs. ' + games[i].away_team + ' at ' + games[i].commence_time;
-                    console.log('Adding game:', listItem.textContent);
-                    gamesList.appendChild(listItem);
-                }
-            }
-            
+            populateGamesList(games);
           } catch (error) {
             console.error('Error parsing JSON:', error);
           }
@@ -88,6 +71,23 @@ function onSportSelection(selectedSport) {
       }
     };
     xhr.send();
+}
+
+function populateGamesList(games) {
+    var gamesList = document.getElementById('games-list');
+
+    // Clear the list before populating
+    gamesList.innerHTML = '';
+
+    // Generate the HTML options
+    games.forEach(function(game) {
+        var a = document.createElement('a');
+        a.href = '/game/' + game.id + '/';
+        a.textContent = game.home_team + ' VS ' + game.away_team;
+        var li = document.createElement('li');
+        li.appendChild(a);
+        gamesList.appendChild(li);
+    });
 }
   
   
