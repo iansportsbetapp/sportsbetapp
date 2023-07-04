@@ -3,9 +3,7 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<head>
-  <script src="/config/static/js/script.js"></script>
-</head>
+
 <div class="filter-section">
   <h2>Filter</h2>
   <div class="filter-container">
@@ -17,7 +15,7 @@
 
     <select name="sport" id="sport-dropdown">
       {% for sport in active_sports %}
-        <option value="{{ sport }}">{{ sport }}</option>
+        <option value="{{ sport.key }}">{{ sport.description }}</option>
       {% endfor %}
     </select>
   </div>
@@ -54,18 +52,20 @@
       <main role="main" class="col-sm-10 ml-sm-auto px-4">
         <h1 class="mt-2">Upcoming events</h1>
         <p>This is where upcoming events should display</p>
-        <!-- this is list item that displays events that are clickable -->
-        <!-- {% if games %} -->
-        <ul>
-          <!-- {% for game in games %} -->
-            <!-- <li><a href="{% url 'game_detail' game.id %}">{{ game.home_team }}</a></li> -->
-          {% endfor %}
+        <ul id="games-list">
+            <!-- Your JavaScript code will populate this list -->
         </ul>
-          {% else %}
-            <p>No upcoming games.</p>
-          {% endif %}
-
       </main>
     </div>
   </div>
+
+  <script>
+    document.getElementById('sport-dropdown').addEventListener('change', function() {
+        onSportSelection(this.value);
+    });
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="/static/js/script.js"></script>
+
 {% endblock %}

@@ -13,11 +13,11 @@ function initializeDatePickers() {
   }
   
   // Add an event listener to the sport select dropdown
-  document.getElementById('sport-select').addEventListener('change', function(event) {
-    const selectedSport = event.target.value;
-    // Perform the filtering based on the selected sport
-    // Call a function or update the game list accordingly
-  });
+  document.addEventListener('DOMContentLoaded', (event) => {
+    document.getElementById('sport-dropdown').addEventListener('change', function() {
+        onSportSelection(this.value);
+    });
+});
   
   // Call the initializeDatePickers function when the page has finished loading
   window.addEventListener('load', function() {
@@ -26,7 +26,7 @@ function initializeDatePickers() {
 
   // Load the sports.json file
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'sports.json', true);
+xhr.open('GET', '../static/sportsbetapp/sports.json', true);
 xhr.onreadystatechange = function() {
     if (xhr.readyState === 4 && xhr.status === 200) {
         var sportsData = JSON.parse(xhr.responseText);
@@ -53,13 +53,44 @@ function populateSportDropdown(sportsData) {
 }
 
 function onSportSelection(selectedSport) {
-    // Make an AJAX request to retrieve the upcoming games based on the selected sport
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/get_upcoming_games/' + selectedSport, true);
+    const encodedSport = encodeURIComponent(selectedSport);
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `/get_upcoming_games/${encodedSport}/`, true);
     xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            // Handle the response from the server if needed
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          try {
+            var games = JSON.parse(xhr.responseText);
+            
+            // Get the games list element
+            var gamesList = document.getElementById('games-list');
+            gamesList.innerHTML = ''; // Clear the current games list
+            
+            if (games.length === 0) {
+              var listItem = document.createElement('li');
+              listItem.textContent = 'No upcoming games.';
+              gamesList.appendChild(listItem);
+            } else {
+                for (var i = 0; i < games.length; i++) {
+                    var listItem = document.createElement('li');
+                    listItem.textContent = games[i].home_team + ' vs. ' + games[i].away_team + ' at ' + games[i].commence_time;
+                    console.log('Adding game:', listItem.textContent);
+                    gamesList.appendChild(listItem);
+                }
+            }
+            
+          } catch (error) {
+            console.error('Error parsing JSON:', error);
+          }
+        } else {
+          console.error(`Error with request: HTTP ${xhr.status}`);
         }
+      }
     };
     xhr.send();
 }
+  
+  
+  
+  
+

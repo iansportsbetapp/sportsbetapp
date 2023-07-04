@@ -6,9 +6,10 @@ from django.http import HttpResponse, JsonResponse, request
 from django.template import loader
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from api.json_to_views import get_upcoming_games
+from django.core.exceptions import ObjectDoesNotExist
 from .models import Game
 import json
+from datetime import datetime
 
 
 
@@ -62,17 +63,34 @@ def Mydashboard(request):
     return HttpResponse(template.render())
 
 # this displays events stored as Game in models
-def home(request):
-    with open('../config/api/sports.json', 'r') as file:
+def home(request, selected_sport=None):
+    with open('/Users/ian/sportsbetapp/config/static/sportsbetapp/sports.json', 'r') as file:
         sports_data = json.load(file)
     
     active_sports = [sport['description'] for sport in sports_data if sport['active']]
-    
+
+    # We don't need to do anything special with selected_sport here
+    # as the selection is handled on the frontend by the JavaScript code
+
     context = {
-        'active_sports': active_sports
-    }
+    'active_sports': [{'key': sport['key'], 'description': sport['description']} for sport in sports_data if sport['active']],
+}
     
     return render(request, 'home.html', context)
+
+def get_upcoming_games(request, selected_sport):
+    print("Decoded selected_sport: ", selected_sport)  # Add this line
+    try:
+        games = Game.objects.filter(sport_key=selected_sport).values()
+        games_list = list(games)
+        for game in games_list:
+            if isinstance(game.get('commence_time'), datetime):
+                game['commence_time'] = game['commence_time'].isoformat()
+        print(json.dumps(games_list, indent=4)) 
+    except ObjectDoesNotExist:
+        games_list = []  # No games found for the given sport_key
+
+    return JsonResponse(games_list, safe=False)
 
 def game_detail(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
