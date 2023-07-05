@@ -10,6 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Game
 import json
 from datetime import datetime
+from django.utils.dateparse import parse_datetime
+from django.utils.timezone import make_aware
 
 
 
@@ -79,9 +81,22 @@ def home(request, selected_sport=None):
     return render(request, 'home.html', context)
 
 def get_upcoming_games(request, selected_sport):
-    print("Decoded selected_sport: ", selected_sport)  # Add this line
+    print("Decoded selected_sport: ", selected_sport)
+
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    # Check for 'undefined' values and convert to datetime if valid
+    start_date = make_aware(datetime.strptime(start_date_str, '%Y-%m-%d')) if start_date_str != 'undefined' else None
+    end_date = make_aware(datetime.strptime(end_date_str, '%Y-%m-%d')) if end_date_str != 'undefined' else None
+
     try:
-        games = Game.objects.filter(sport_key=selected_sport).values()
+        # Filter based on start_date and end_date if they exist
+        if start_date and end_date:
+            games = Game.objects.filter(sport_key=selected_sport, commence_time__range=[start_date, end_date]).values()
+        else:
+            games = Game.objects.filter(sport_key=selected_sport).values()
+        
         games_list = list(games)
         for game in games_list:
             if isinstance(game.get('commence_time'), datetime):

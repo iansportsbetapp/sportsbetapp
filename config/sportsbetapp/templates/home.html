@@ -8,23 +8,25 @@
   <h2>Filter</h2>
   <div class="filter-container">
     <label for="start-date">Start Date:</label>
-    <input type="text" id="start-date" placeholder="Select start date">
+    <input type="date" id="start-date" placeholder="Select start date">
 
     <label for="end-date">End Date:</label>
-    <input type="text" id="end-date" placeholder="Select end date">
+    <input type="date" id="end-date" placeholder="Select end date">
 
     <select name="sport" id="sport-dropdown">
       {% for sport in active_sports %}
         <option value="{{ sport.key }}">{{ sport.description }}</option>
       {% endfor %}
     </select>
+    <button id="submit-button">Submit</button>
   </div>
 </div>
+
   <div class="container-fluid">
     <div class="row">
       <nav class="col-sm-2 d-none d-sm-block bg-light sidebar">
         <div class="sidebar-sticky">
-          <ul class="nav flex-column">
+          <ul class="nav flex-column"> 
           
 
             <!-- This is hidden until login functionality is needed again -->
@@ -45,9 +47,9 @@
                 <a class="nav-link" href="{% url 'register' %}">Register</a>
               </li>
             {% endif %} -->
-          </ul>
+          <!-- </ul>
         </div>
-      </nav>
+      </nav> -->
 
       <main role="main" class="col-sm-10 ml-sm-auto px-4">
         <h1 class="mt-2">Upcoming events</h1>
@@ -58,12 +60,6 @@
       </main>
     </div>
   </div>
-
-  <script>
-    document.getElementById('sport-dropdown').addEventListener('change', function() {
-        onSportSelection(this.value);
-    });
-  </script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="/static/js/script.js"></script>

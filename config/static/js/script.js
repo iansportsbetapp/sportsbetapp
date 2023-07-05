@@ -1,6 +1,3 @@
-// Add this script at the end of your HTML body or in a separate JavaScript file
-
-// Function to initialize the date pickers
 function initializeDatePickers() {
     // Retrieve the start date and end date input elements
     const startDateInput = document.getElementById('start-date');
@@ -8,21 +5,30 @@ function initializeDatePickers() {
   
     // Initialize the date picker widgets using a library like jQuery UI
     // Replace the datepicker initialization code with the one suitable for your date picker library
-    $(startDateInput).datepicker();
-    $(endDateInput).datepicker();
-  }
-  
-  // Add an event listener to the sport select dropdown
-  document.addEventListener('DOMContentLoaded', (event) => {
+    // $(startDateInput).datepicker();
+    // $(endDateInput).datepicker();
+}
+
+// Add an event listener to the sport select dropdown and submit button
+document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('sport-dropdown').addEventListener('change', function() {
-        onSportSelection(this.value);
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        onSportSelection(this.value, startDate, endDate);
+    });
+
+    document.getElementById('submit-button').addEventListener('click', function() {
+        const selectedSport = document.getElementById('sport-dropdown').value;
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        onSportSelection(selectedSport, startDate, endDate);
     });
 });
-  
-  // Call the initializeDatePickers function when the page has finished loading
-  window.addEventListener('load', function() {
+
+// Call the initializeDatePickers function when the page has finished loading
+window.addEventListener('load', function() {
     initializeDatePickers();
-  });
+});
 
   // Load the sports.json file
 var xhr = new XMLHttpRequest();
@@ -52,26 +58,29 @@ function populateSportDropdown(sportsData) {
     });
 }
 
-function onSportSelection(selectedSport) {
+function onSportSelection(selectedSport, startDate, endDate) {
     const encodedSport = encodeURIComponent(selectedSport);
+    const encodedStartDate = encodeURIComponent(startDate);
+    const encodedEndDate = encodeURIComponent(endDate);
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', `/get_upcoming_games/${encodedSport}/`, true);
+    xhr.open('GET', `/get_upcoming_games/${encodedSport}/?start_date=${encodedStartDate}&end_date=${encodedEndDate}`, true);
     xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          try {
-            var games = JSON.parse(xhr.responseText);
-            populateGamesList(games);
-          } catch (error) {
-            console.error('Error parsing JSON:', error);
-          }
-        } else {
-          console.error(`Error with request: HTTP ${xhr.status}`);
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    const games = JSON.parse(xhr.responseText);
+                    populateGamesList(games);
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                }
+            } else {
+                console.error(`Error with request: HTTP ${xhr.status}`);
+            }
         }
-      }
     };
     xhr.send();
 }
+
 
 function populateGamesList(games) {
     var gamesList = document.getElementById('games-list');
@@ -90,7 +99,7 @@ function populateGamesList(games) {
     });
 }
   
-  
+
   
   
 

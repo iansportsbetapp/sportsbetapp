@@ -32,10 +32,14 @@ body {
     padding: 0;
   }
   
-  nav ul li {
+  nav.sidebar ul li {
     display: inline-block;
     margin-right: 20px;
-  }
+}
+
+#games-list li {
+  display: block;
+}
   
   nav ul li a {
     color: #444;
