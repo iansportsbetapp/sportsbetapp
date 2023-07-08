@@ -2,14 +2,9 @@ function initializeDatePickers() {
     // Retrieve the start date and end date input elements
     const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');
-  
-    // Initialize the date picker widgets using a library like jQuery UI
-    // Replace the datepicker initialization code with the one suitable for your date picker library
-    // $(startDateInput).datepicker();
-    // $(endDateInput).datepicker();
 }
 
-// Add an event listener to the sport select dropdown and submit button
+// Event listener for the 'sport' dropdown menu on home.html
 document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('sport-dropdown').addEventListener('change', function() {
         const startDate = document.getElementById('start-date').value;
@@ -17,6 +12,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         onSportSelection(this.value, startDate, endDate);
     });
 
+    //Event listener for submit button (filters) on home.html
     document.getElementById('submit-button').addEventListener('click', function() {
         const selectedSport = document.getElementById('sport-dropdown').value;
         const startDate = document.getElementById('start-date').value;
@@ -43,10 +39,21 @@ xhr.send();
 
 function populateSportDropdown(sportsData) {
     var dropdown = document.getElementById('sport-dropdown');
+    var startDate = document.getElementById('start-date').value;
+    var endDate = document.getElementById('end-date').value;
 
     // Filter the sports data based on the 'active' field
     var activeSports = sportsData.filter(function(sport) {
         return sport.active === true;
+    //filter the sports data based on the dates selected
+    var eventsInRange = sport.events.filter(function(event) {
+        var eventDate = new Date(event.commence_time);
+        return eventDate >= new Date(startDate) && eventDate<= new Date(endDate);
+
+    });
+
+    return eventsInRange.length > 0;
+
     });
 
     // Generate the HTML options
