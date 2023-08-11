@@ -1,13 +1,15 @@
 import requests
 import json
+from decouple import config
 
 
 
 def get_sports_json():
+    api_key = config('ODDS_API')
     sports_response = requests.get(
         'https://api.the-odds-api.com/v4/sports',
         params={
-            "api_key": 'cff6cb1b3c6773cdd7053a1f54b84342',
+            "api_key": api_key,
             'all': 'true'
         }
     )
@@ -23,12 +25,13 @@ def get_sports_json():
 
 
 def get_odds_json(sports_json):
+    api_key = config('ODDS_API')
     for sport in sports_json:
         if sport['active']:
             odds_response = requests.get(
                 f"https://api.the-odds-api.com/v4/sports/{sport['key']}/odds",
                 params={
-                    'api_key': 'cff6cb1b3c6773cdd7053a1f54b84342',
+                    'api_key': api_key,
                     'regions': 'us,us2',
                     'markets': 'h2h',
                     'oddsFormat': 'decimal',
