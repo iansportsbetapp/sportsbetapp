@@ -12,7 +12,9 @@ import json
 from datetime import datetime
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import make_aware
-
+from django.conf import settings
+from django.templatetags.static import static
+import os
 
 
 
@@ -66,7 +68,9 @@ def Mydashboard(request):
 
 # this displays events stored as Game in models
 def home(request, selected_sport=None):
-    with open('/Users/ian/sportsbetapp/static/sportsbetapp/sports.json', 'r') as file:
+    # Construct the path to the JSON file
+    json_file_path = os.path.join(settings.BASE_DIR, 'static', 'sportsbetapp', 'sports.json')
+    with open(json_file_path, 'r') as file:
         sports_data = json.load(file)
     
     active_sports = [sport['description'] for sport in sports_data if sport['active']]

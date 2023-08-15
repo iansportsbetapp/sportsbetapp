@@ -20,7 +20,7 @@ def get_sports_json():
         print('List of in season sports:', sports_json_data)
 
         # Save the sports JSON data to a file
-        with open('sports.json', 'w') as file:
+        with open('api/sports.json', 'w') as file:
             json.dump(sports_json_data, file)
 
 
@@ -46,14 +46,14 @@ def get_odds_json(sports_json):
                 print(odds_json_data)
 
                 # Save the odds JSON data to a file
-                with open(f'odds_{sport["key"]}.json', 'w') as file:
+                with open(f'api/odds_{sport["key"]}.json', 'w') as file:
                     json.dump(odds_json_data, file)
 
 # Retrieve and save sports JSON data
 get_sports_json()
 
 # Load sports JSON data from file
-with open('sports.json', 'r') as file:
+with open('api/sports.json', 'r') as file:
     sports_json_data = json.load(file)
 
 # Retrieve and save odds JSON data for each sport
