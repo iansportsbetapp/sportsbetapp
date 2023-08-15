@@ -1,7 +1,8 @@
 import requests
 import json
 from decouple import config
-
+from django.utils import timezone
+from ..sportsbetapp.models import TheOddsAPIData
 
 
 def get_sports_json():
@@ -19,9 +20,8 @@ def get_sports_json():
         sports_json_data = sports_response.json()
         print('List of in season sports:', sports_json_data)
 
-        # Save the sports JSON data to a file
-        with open('api/sports.json', 'w') as file:
-            json.dump(sports_json_data, file)
+        # Save the sports JSON data to the database
+        TheOddsAPIData.objects.create(data=sports_json_data, created_at=timezone.now())
 
 
 def get_odds_json(sports_json):
@@ -45,16 +45,15 @@ def get_odds_json(sports_json):
                 print(f'Number of events for sport {sport["key"]}:', len(odds_json_data))
                 print(odds_json_data)
 
-                # Save the odds JSON data to a file
-                with open(f'api/odds_{sport["key"]}.json', 'w') as file:
-                    json.dump(odds_json_data, file)
+                # Save the odds JSON data to the database
+                TheOddsAPIData.objects.create(data=odds_json_data, created_at=timezone.now())
 
 # Retrieve and save sports JSON data
 get_sports_json()
 
-# Load sports JSON data from file
-with open('api/sports.json', 'r') as file:
-    sports_json_data = json.load(file)
+# Load sports JSON data from the database
+sports_json_data_entry = TheOddsAPIData.objects.latest('created_at')
+sports_json_data = sports_json_data_entry.data
 
 # Retrieve and save odds JSON data for each sport
 get_odds_json(sports_json_data)

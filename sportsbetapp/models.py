@@ -32,3 +32,6 @@ class Outcome(models.Model):
     price = models.FloatField()
     point = models.FloatField(null=True, blank=True)  # Optional field for spreads
     
+    class TheOddsAPIData(models.Model):
+        data = models.JSONField()
+        created_at = models.DateTimeField(auto_now_add=True)
