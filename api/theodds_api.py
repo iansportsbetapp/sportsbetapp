@@ -1,9 +1,17 @@
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+import django
 import requests
 import json
 from decouple import config
 from django.utils import timezone
-from ..sportsbetapp.models import TheOddsAPIData
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+django.setup()
+
+from sportsbetapp.models import TheOddsAPIData
 
 def get_sports_json():
     api_key = config('ODDS_API')
