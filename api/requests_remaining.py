@@ -1,7 +1,11 @@
 import requests
+from decouple import config
+
 
 def get_remaining_requests():
-    url = f'https://api.the-odds-api.com/v4/sports/?apiKey=cff6cb1b3c6773cdd7053a1f54b84342'
+    api_key = os.getenv("THE_ODDS")
+    url = f'https://api.the-odds-api.com/v4/sports/?apiKey={api_key}'
+
 
     response = requests.get(url)
 
