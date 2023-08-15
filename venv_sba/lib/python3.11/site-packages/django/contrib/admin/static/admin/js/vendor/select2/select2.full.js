@@ -292,7 +292,7 @@ var requirejs, require, define;
 
     function makeConfig(name) {
         return function () {
-            return (config && config.config && config.config[name]) || {};
+            return (config && config && config[name]) || {};
         };
     }
 
