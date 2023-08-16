@@ -1,3 +1,5 @@
+# this file was located at sportsbetapp.sportsbetapp.management
+# this file was archived because the load_json_data.py 
 from django.core.management.base import BaseCommand
 from sportsbetapp.models import Game, Bookmaker, Outcome, Market
 import json
