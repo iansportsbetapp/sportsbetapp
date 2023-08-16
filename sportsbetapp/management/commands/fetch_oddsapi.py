@@ -1,25 +1,21 @@
 from django.core.management.base import BaseCommand
-from sportsbetapp.models import TheOddsAPIData
+from sportsbetapp.models import Game, Bookmaker, Market, Outcome, Sport
 import requests
 from decouple import config
-from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 class Command(BaseCommand):
-    help = 'Fetches data from the Odds API and stores it in TheOddsAPIData model'
+    help = 'Fetches data from the Odds API and stores it in the respective models'
 
     def handle(self, *args, **options):
-        # Start fetching and storing data
-        self.get_sports_json()
-        
-        # Load sports JSON data from the database
-        sports_json_data_entry = TheOddsAPIData.objects.latest('created_at')
-        sports_json_data = sports_json_data_entry.data
+        # Fetch and store sports data
+        sports_json_data = self.get_sports_json()
 
-        # Retrieve and save odds JSON data for each sport
-        self.get_odds_json(sports_json_data)
+        # Retrieve and save odds data for each sport
+        self.get_and_save_odds_data(sports_json_data)
         
     def get_sports_json(self):
-        """Retrieves sports JSON data from the API and saves it to the database."""
+        """Retrieves sports JSON data from the API and saves it to the Sport model."""
         api_key = config('ODDS_API')
         sports_response = requests.get(
             'https://api.the-odds-api.com/v4/sports',
@@ -28,17 +24,23 @@ class Command(BaseCommand):
                 'all': 'true'
             }
         )
+
+        sports_json_data = []
         if sports_response.status_code != 200:
             print(f'Failed to get sports: status_code {sports_response.status_code}, response body {sports_response.text}')
         else:
             sports_json_data = sports_response.json()
-            print('List of in season sports:', sports_json_data)
+            for sport in sports_json_data:
+                Sport.objects.update_or_create(
+                    key=sport['key'],
+                    defaults={
+                        'title': sport['title'],
+                        'is_active': sport['active'],
+                    }
+                )
+        return sports_json_data
 
-            # Save the sports JSON data to the database
-            TheOddsAPIData.objects.create(data=sports_json_data, created_at=timezone.now())
-
-    def get_odds_json(self, sports_json):
-        """Retrieves odds JSON data for active sports from the API and saves it to the database."""
+    def get_and_save_odds_data(self, sports_json):
         api_key = config('ODDS_API')
         for sport in sports_json:
             if sport['active']:
@@ -53,10 +55,39 @@ class Command(BaseCommand):
                 )
                 if odds_response.status_code != 200:
                     print(f'Failed to get odds for sport {sport["key"]}: status_code {odds_response.status_code}, response body {odds_response.text}')
-                else:
-                    odds_json_data = odds_response.json()
-                    print(f'Number of events for sport {sport["key"]}:', len(odds_json_data))
-                    print(odds_json_data)
+                    continue
 
-                    # Save the odds JSON data to the database
-                    TheOddsAPIData.objects.create(data=odds_json_data, created_at=timezone.now())
+                odds_json_data = odds_response.json()
+                print(f'Number of events for sport {sport["key"]}:', len(odds_json_data))
+                for game_data in odds_json_data:
+                    game_instance, _ = Game.objects.update_or_create(
+                        id=game_data["id"],
+                        defaults={
+                            'sport_key': game_data["sport_key"],
+                            'sport_title': sport["title"],
+                            'commence_time': game_data["commence_time"],
+                            'home_team': game_data["home_team"],
+                            'away_team': game_data["away_team"],
+                        }
+                    )
+                    for bookmaker_data in game_data["bookmakers"]:
+                        bookmaker_instance, _ = Bookmaker.objects.update_or_create(
+                            key=bookmaker_data["key"],
+                            defaults={'title': bookmaker_data["title"]}
+                        )
+                        for market_data in bookmaker_data["markets"]:
+                            market_instance, _ = Market.objects.update_or_create(
+                                key=market_data["key"],
+                                defaults={
+                                    'last_update': bookmaker_data["last_update"],
+                                    'bookmaker': bookmaker_instance
+                                }
+                            )
+                            for outcome_data in market_data["outcomes"]:
+                                Outcome.objects.get_or_create(
+                                    game=game_instance,
+                                    bookmaker=bookmaker_instance,
+                                    name=outcome_data["name"],
+                                    price=outcome_data["price"],
+                                    point=outcome_data.get("point", None)
+                                )

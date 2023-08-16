@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         onSportSelection(this.value, startDate, endDate);
     });
 
-    //Event listener for submit button (filters) on home.html
+    // Event listener for submit button (filters) on home.html
     document.getElementById('submit-button').addEventListener('click', function() {
         const selectedSport = document.getElementById('sport-dropdown').value;
         const startDate = document.getElementById('start-date').value;
@@ -24,18 +24,21 @@ document.addEventListener('DOMContentLoaded', (event) => {
 // Call the initializeDatePickers function when the page has finished loading
 window.addEventListener('load', function() {
     initializeDatePickers();
+    // Load the sports data from the new endpoint
+    fetchSportsData();
 });
 
-  // Load the sports.json file
-var xhr = new XMLHttpRequest();
-xhr.open('GET', '../static/sportsbetapp/sports.json', true);
-xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-        var sportsData = JSON.parse(xhr.responseText);
-        populateSportDropdown(sportsData);
-    }
-};
-xhr.send();
+function fetchSportsData() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/get_sports_data/', true); // Updated the URL here
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var sportsData = JSON.parse(xhr.responseText);
+            populateSportDropdown(sportsData);
+        }
+    };
+    xhr.send();
+}
 
 function populateSportDropdown(sportsData) {
     var dropdown = document.getElementById('sport-dropdown');
@@ -43,18 +46,7 @@ function populateSportDropdown(sportsData) {
     var endDate = document.getElementById('end-date').value;
 
     // Filter the sports data based on the 'active' field
-    var activeSports = sportsData.filter(function(sport) {
-        return sport.active === true;
-    //filter the sports data based on the dates selected
-    var eventsInRange = sport.events.filter(function(event) {
-        var eventDate = new Date(event.commence_time);
-        return eventDate >= new Date(startDate) && eventDate<= new Date(endDate);
-
-    });
-
-    return eventsInRange.length > 0;
-
-    });
+    var activeSports = sportsData.filter(sport => sport.active);
 
     // Generate the HTML options
     activeSports.forEach(function(sport) {
@@ -88,7 +80,6 @@ function onSportSelection(selectedSport, startDate, endDate) {
     xhr.send();
 }
 
-
 function populateGamesList(games) {
     var gamesList = document.getElementById('games-list');
 
@@ -105,6 +96,7 @@ function populateGamesList(games) {
         gamesList.appendChild(li);
     });
 }
+
   
 
   

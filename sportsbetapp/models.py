@@ -35,3 +35,12 @@ class Outcome(models.Model):
 class TheOddsAPIData(models.Model):
     data = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Sport(models.Model):
+    key = models.CharField(max_length=100, unique=True, primary_key=True)  # Assuming the 'key' is unique for each sport
+    title = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.title
