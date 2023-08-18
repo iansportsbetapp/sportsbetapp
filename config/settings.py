@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Define default secret for local
-LOCAL_DJANGO_SECRET_KEY = os.environ.get('LOCAL_DJANGO_SECRET_KEY', 'default_local_secret_key')
+DJANGO_SECRET_KEY = os.environ.get('LOCAL_DJANGO_SECRET_KEY', 'default_local_secret_key')
 
 # Override if in production or staging
 if 'PROD_DJANGO_SECRET_KEY' in os.environ:
@@ -106,7 +106,6 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'local_sportsbetapp_db',
         'USER': 'postgres',
-        'PASSWORD':config('LOCAL_PSQL_PASS'),
         'HOST': 'localhost',
         'PORT': '5432',
     }
