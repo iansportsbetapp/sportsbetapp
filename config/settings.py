@@ -25,7 +25,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('DJANGO_SECRET_KEY')
+# Define default secret for local
+LOCAL_DJANGO_SECRET_KEY = os.environ.get('LOCAL_DJANGO_SECRET_KEY', 'default_local_secret_key')
+
+# Override if in production or staging
+if 'PROD_DJANGO_SECRET_KEY' in os.environ:
+    SECRET_KEY = os.environ.get('PROD_DJANGO_SECRET_KEY')
+elif 'STAGE_DJANGO_SECRET_KEY' in os.environ:
+    SECRET_KEY = os.environ.get('STAGE_DJANGO_SECRET_KEY')
+# Ensure there's a key set. If not, raise an error
+# note: Useful for troubleshooting, but also prevents app from running in insecure state
+if not SECRET_KEY:
+    raise ValueError("The Django secret key was not set.")
+
 API_KEY = config('YOUR_API_KEY_NAME', default='default_value_if_not_set')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -94,7 +106,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'local_sportsbetapp_db',
         'USER': 'postgres',
-        # 'PASSWORD': 'yourpassword',  #no local postgress password configured
+        'PASSWORD':config('LOCAL_PSQL_PASS'),
         'HOST': 'localhost',
         'PORT': '5432',
     }

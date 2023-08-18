@@ -1,5 +1,6 @@
 import requests
 from decouple import config
+import os
 
 
 def get_remaining_requests():
