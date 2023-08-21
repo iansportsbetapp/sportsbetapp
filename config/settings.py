@@ -12,10 +12,12 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 import django_heroku
 from decouple import config
 import dj_database_url
 
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,17 +27,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Define default secret for local
-DJANGO_SECRET_KEY = os.environ.get('LOCAL_DJANGO_SECRET_KEY', 'default_local_secret_key')
+# Initially set SECRET_KEY to None to ensure it gets set by the conditions below.
 
-# Override if in production or staging
+SECRET_KEY = None
+
+# Check environment variables in order of precedence: production, staging, local.
 if 'PROD_DJANGO_SECRET_KEY' in os.environ:
     SECRET_KEY = os.environ.get('PROD_DJANGO_SECRET_KEY')
 elif 'STAGE_DJANGO_SECRET_KEY' in os.environ:
     SECRET_KEY = os.environ.get('STAGE_DJANGO_SECRET_KEY')
+else:
+    SECRET_KEY = os.environ.get('LOCAL_DJANGO_SECRET_KEY')
+
 # Ensure there's a key set. If not, raise an error
-# note: Useful for troubleshooting, but also prevents app from running in insecure state
 if not SECRET_KEY:
+    print('secret key', SECRET_KEY)
     raise ValueError("The Django secret key was not set.")
 
 API_KEY = config('YOUR_API_KEY_NAME', default='default_value_if_not_set')
