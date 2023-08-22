@@ -14,11 +14,10 @@
     <input type="date" id="end-date" placeholder="Select end date">
 
     <select name="sport" id="sport-dropdown">
-      {% for sport in active_sports %}
+      {% for sport in sports_with_games %}
         <option value="{{ sport.key }}">{{ sport.description }}</option>
       {% endfor %}
     </select>
-    <button id="submit-button">Submit</button>
   </div>
 </div>
 

@@ -63,8 +63,7 @@ class Command(BaseCommand):
                     game_instance, _ = Game.objects.update_or_create(
                         id=game_data["id"],
                         defaults={
-                            'sport_key': game_data["sport_key"],
-                            'sport_title': sport["title"],
+                            'sport': Sport.objects.get(key=game_data["sport_key"]),
                             'commence_time': game_data["commence_time"],
                             'home_team': game_data["home_team"],
                             'away_team': game_data["away_team"],

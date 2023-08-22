@@ -12,6 +12,7 @@ from django.utils.dateparse import parse_datetime
 from django.utils.timezone import make_aware
 from django.conf import settings
 import os
+from django.db.models import Count, Q
 
 
 def login_view(request):
@@ -65,9 +66,10 @@ def get_upcoming_games(request, selected_sport):
 
     try:
         if start_date and end_date:
-            games = Game.objects.filter(sport_key=selected_sport, commence_time__range=[start_date, end_date]).values()
+            games = Game.objects.filter(sport__key=selected_sport, commence_time__range=[start_date, end_date]).values()
+
         else:
-            games = Game.objects.filter(sport_key=selected_sport).values()
+            games = Game.objects.filter(sport__key=selected_sport).values()
         
         games_list = list(games)
         for game in games_list:
@@ -89,6 +91,32 @@ def game_detail(request, game_id):
     }
     return render(request, 'game_detail.html', context)
 
-def get_sports_data(request):
-    sports = Sport.objects.all().values('key', 'description', 'active')
+def sports_with_games(request):
+    print("Entered sports_with_games view")
+    # Get dates from request
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+    print('start_date_str', start_date_str, 'end_date_str', end_date_str)
+
+    # Convert the dates to datetime objects (if they are valid)
+    start_date = make_aware(datetime.strptime(start_date_str, '%Y-%m-%d')) if start_date_str else None
+    end_date = make_aware(datetime.strptime(end_date_str, '%Y-%m-%d')) if end_date_str else None
+
+    #Testing error: empty list returned
+    print("Before setting start_date:", start_date_str)
+    print("After setting start_date:", start_date)
+    
+    # Ensure the start date is less than or equal to the end date
+    if not start_date or not end_date or start_date > end_date:
+        return JsonResponse([], safe=False)  # Return an empty list
+
+    # Get the sports that have games within the specified date range
+    sports = Sport.objects.annotate(
+        num_games=Count('games', filter=Q(games__commence_time__range=[start_date, end_date]))
+    ).filter(num_games__gt=0).values('key', 'title', 'is_active')
+    
+    print(sports.query)
+
     return JsonResponse(list(sports), safe=False)
+
+

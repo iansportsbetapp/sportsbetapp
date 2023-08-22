@@ -12,14 +12,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
         onSportSelection(this.value, startDate, endDate);
     });
 
-    // Event listener for submit button (filters) on home.html
-    document.getElementById('submit-button').addEventListener('click', function() {
-        const selectedSport = document.getElementById('sport-dropdown').value;
-        const startDate = document.getElementById('start-date').value;
-        const endDate = document.getElementById('end-date').value;
-        onSportSelection(selectedSport, startDate, endDate);
-    });
-});
+document.getElementById('start-date').addEventListener('change', fetchSportsData);
+document.getElementById('end-date').addEventListener('change', fetchSportsData);
+    
 
 // Call the initializeDatePickers function when the page has finished loading
 window.addEventListener('load', function() {
@@ -29,10 +24,14 @@ window.addEventListener('load', function() {
 });
 
 function fetchSportsData() {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/get_sports_data/', true); // Updated the URL here
+    xhr.open('GET', `/sports_with_games/?start_date=${startDate}&end_date=${endDate}`, true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
             var sportsData = JSON.parse(xhr.responseText);
             populateSportDropdown(sportsData);
         }
@@ -46,13 +45,15 @@ function populateSportDropdown(sportsData) {
     var endDate = document.getElementById('end-date').value;
 
     // Filter the sports data based on the 'active' field
-    var activeSports = sportsData.filter(sport => sport.active);
+    var activeSports = sportsData.filter(sport => sport.is_active);
+
+    dropdown.innerHTML = "";
 
     // Generate the HTML options
     activeSports.forEach(function(sport) {
         var option = document.createElement('option');
         option.value = sport.key;
-        option.textContent = sport.description;
+        option.textContent = sport.title;
         dropdown.appendChild(option);
     });
 }
@@ -62,7 +63,7 @@ function onSportSelection(selectedSport, startDate, endDate) {
     const encodedStartDate = encodeURIComponent(startDate);
     const encodedEndDate = encodeURIComponent(endDate);
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', `/get_upcoming_games/${encodedSport}/?start_date=${encodedStartDate}&end_date=${encodedEndDate}`, true);
+    xhr.open('GET', `/get_upcoming_games/${encodedSport}?start_date=${encodedStartDate}&end_date=${encodedEndDate}`, true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
