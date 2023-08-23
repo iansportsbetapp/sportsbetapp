@@ -12,9 +12,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
         onSportSelection(this.value, startDate, endDate);
     });
 
-document.getElementById('start-date').addEventListener('change', fetchSportsData);
-document.getElementById('end-date').addEventListener('change', fetchSportsData);
-    
+    document.getElementById('start-date').addEventListener('change', fetchSportsData);
+    document.getElementById('end-date').addEventListener('change', fetchSportsData);
+});
 
 // Call the initializeDatePickers function when the page has finished loading
 window.addEventListener('load', function() {
